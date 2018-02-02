@@ -43,10 +43,27 @@ class IndexPage extends React.Component {
 
 
   render() {
+    if (this.props.data.loading) {
+      return <p>Loading ...</p>;
+    }
+     if (this.props.data.error) {
+       return <p>{this.props.data.error.message}</p>;
+    }
+
+    let shop = this.props.data.shop;
 
     return (
+
       <div className="App" onClick={this.printData}>
-        <div>no</div>
+        <h2>{shop.name}</h2>
+        <h3>{shop.description}</h3>
+
+        {shop.products.edges.map(({node}) => (
+          <div>
+            <h4>{node.title}</h4>
+            <p>{node.description}</p>
+          </div>
+        ))}
       </div>
     )
   }
