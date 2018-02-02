@@ -4,6 +4,12 @@ import Link from 'gatsby-link'
 import Helmet from 'react-helmet'
 import styled, { injectGlobal } from 'styled-components'
 import 'normalize.css'
+import './app.css'
+import ApolloClient from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+import { ApolloProvider } from 'react-apollo';
+import { ApolloLink, concat } from 'apollo-link';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 
 // importing fonts
 import NeueHaasGrotTextRoman_eot from "../assets/fonts/NeueHaasGrotText-55Roman-Web.eot"
@@ -18,6 +24,27 @@ import NeueHaasGrotDispRoman_woff2 from "../assets/fonts/NeueHaasGrotDisp-55Roma
 import NeueHaasGrotDispItalic_eot from "../assets/fonts/NeueHaasGrotDisp-56Italic-Web.eot"
 import NeueHaasGrotDispItalic_woff from "../assets/fonts/NeueHaasGrotDisp-56Italic-Web.woff"
 import NeueHaasGrotDispItalic_woff2 from "../assets/fonts/NeueHaasGrotDisp-56Italic-Web.woff2"
+
+
+
+// const httpLink = new HttpLink({ uri: 'https://huntings-cafe.myshopify.com/api/graphql' });
+const httpLink = new HttpLink({ uri: 'https://graphql.myshopify.com/api/graphql' });
+
+const authMiddleware  = new ApolloLink((operation, forward) => {
+  operation.setContext({
+    headers: {
+      'X-Shopify-Storefront-Access-Token': 'dd4d4dc146542ba7763305d71d1b3d38'
+    }
+  });
+
+  return forward(operation);
+})
+
+const client = new ApolloClient({
+  link: concat(authMiddleware, httpLink),
+  cache: new InMemoryCache()
+});
+
 
 
 /*
@@ -82,9 +109,9 @@ const TemplateWrapper = ({ children }) => (
     {/*
       Children() is where your page content is inserted.
     */}
-    <InnerContainer>
+    <ApolloProvider client={client}>
       {children()}
-    </InnerContainer>
+    </ApolloProvider>
 
   </Container>
 )
